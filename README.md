@@ -54,39 +54,27 @@ define as regiões; no RJ, as regiões de governo já vêm prontas.
 Na tela de edição, a seção **Conferência dos dados** mostra se as somas de zonas, bairros, locais e seções
 batem com o total dos municípios.
 
-## Deploy na VPS (Ubuntu/Debian)
+## Deploy na VPS (Docker Swarm + Traefik)
 
-```bash
-# 1. Node 18+ (se ainda não tiver)
-curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-sudo apt-get install -y nodejs nginx certbot python3-certbot-nginx
+O app roda como serviço `relatorio_web` na rede `Monadanet`, e o Traefik cuida do HTTPS
+(resolver `letsencryptresolver`). Os dados ficam em `/var/www/relatorio/data`.
 
-# 2. Copie a pasta para o servidor (do seu PC):
-#    scp -r relatorio-eleicoes usuario@IP:/tmp/   e depois:
-sudo mv /tmp/relatorio-eleicoes /opt/relatorio-eleicoes
-cd /opt/relatorio-eleicoes
-sudo cp .env.example .env
-sudo nano .env        # defina ADMIN_PASSWORD e SESSION_SECRET
-sudo mkdir -p data && sudo node scripts/criar-exemplo.js && sudo chown -R www-data:www-data data
+Primeira instalação:
 
-# 3. Serviço (sobe sozinho e reinicia se cair)
-sudo cp deploy/relatorio.service /etc/systemd/system/
-sudo systemctl daemon-reload && sudo systemctl enable --now relatorio
-sudo systemctl status relatorio
-
-# 4. Nginx + HTTPS
-sudo cp deploy/nginx.conf /etc/nginx/sites-available/relatorio.agenciafvx.com
-sudo ln -s /etc/nginx/sites-available/relatorio.agenciafvx.com /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl reload nginx
-sudo certbot --nginx -d relatorio.agenciafvx.com
+```sh
+cd /var/www
+git clone https://github.com/venturafvx/relatorio.git
+cd relatorio
+mkdir -p data && chown 1000:1000 data
+cp .env.example .env && nano .env      # ADMIN_PASSWORD, SESSION_SECRET (openssl rand -hex 32), CONTACT_URL
+docker build -t relatorio:latest .
+docker stack deploy -c docker-compose.yml relatorio
+docker exec $(docker ps -q -f name=relatorio_web) node scripts/criar-exemplo.js   # publica o /exemplo
 ```
 
-**DNS:** no painel do domínio `agenciafvx.com`, crie um registro **A** `relatorio` apontando para o IP da VPS
-(antes do passo do certbot).
+Atualizar depois de um `git push`: `sh /var/www/relatorio/deploy.sh`
 
-**Atualizar o código:** copie os arquivos novos por cima (sem apagar `data/` e `.env`) e rode `sudo systemctl restart relatorio`.
-
-**Backup:** `tar czf backup-relatorios.tgz /opt/relatorio-eleicoes/data`
+Backup: `tar czf /root/backup-relatorios-$(date +%F).tgz -C /var/www/relatorio data`
 
 ## Rodar no seu PC (teste)
 

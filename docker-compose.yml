@@ -1,0 +1,34 @@
+# Stack do Docker Swarm (VPS com Traefik na rede Monadanet).
+# Deploy:  docker build -t relatorio:latest . && docker stack deploy -c docker-compose.yml relatorio
+version: "3.8"
+
+services:
+  web:
+    image: relatorio:latest
+    env_file: .env
+    environment:
+      HOST: 0.0.0.0
+      PORT: "3000"
+      DATA_DIR: /app/data
+      BASE_URL: https://relatorio.agenciafvx.com
+    volumes:
+      # Relatórios salvos (faça backup desta pasta)
+      - /var/www/relatorio/data:/app/data
+    networks:
+      - Monadanet
+    deploy:
+      # Uma réplica só: os dados ficam em arquivos nesta VPS.
+      replicas: 1
+      restart_policy:
+        condition: any
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.relatorio.rule=Host(`relatorio.agenciafvx.com`)
+        - traefik.http.routers.relatorio.entrypoints=websecure
+        - traefik.http.routers.relatorio.tls=true
+        - traefik.http.routers.relatorio.tls.certresolver=letsencryptresolver
+        - traefik.http.services.relatorio.loadbalancer.server.port=3000
+
+networks:
+  Monadanet:
+    external: true
