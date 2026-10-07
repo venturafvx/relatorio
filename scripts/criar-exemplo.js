@@ -327,7 +327,12 @@ for (const [mun, votos, mPct, mCol, nZonas, nLocais, nSecoes] of MUNS) {
 
 const csv = ['nivel;municipio;zona;bairro;local;secao;votos;pct_validos;colocacao', ...out.map((r) => r.join(';'))].join('\n') + '\n';
 const csvFile = path.join(ROOT, 'exemplo', 'exemplo_candidato_99123.csv');
-fs.writeFileSync(csvFile, '﻿' + csv);
+try {
+  fs.writeFileSync(csvFile, '﻿' + csv);
+} catch (e) {
+  // No container a pasta exemplo/ é só leitura; o CSV já vem no repositório.
+  console.log(`(não foi possível gravar ${csvFile}: ${e.code}; seguindo só com a publicação)`);
+}
 
 // ---------- publica o modelo ----------
 const { rows } = rowsFromTable(parseCSV(csv));
