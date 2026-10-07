@@ -1,0 +1,13 @@
+{
+  "name": "relatorio-eleicoes",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Relatórios de votação por link compartilhável — relatorio.agenciafvx.com",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,12 @@
+nivel;municipio;zona;bairro;local;secao;votos;pct_validos;colocacao
+MUNICIPIO;Macaé;;;;;21417;16,43%;2
+MUNICIPIO;Carapebus;;;;;1105;10,76%;1
+ZONA;Macaé;254;;;;11520;18,46%;2
+ZONA;Macaé;109;;;;9897;14,56%;2
+ZONA;Carapebus;255;;;;1105;10,76%;1
+BAIRRO;Macaé;;Barra de Macaé;;;2930;24,37%;1
+BAIRRO;Carapebus;;Centro;;;617;10,60%;1
+LOCAL;Macaé;254;Barra de Macaé;COLÉGIO MUNICIPAL WOLFANGO FERREIRA;;914;27,40%;1
+LOCAL;Carapebus;255;Centro;COLÉGIO MUNICIPAL LUIZ CARLOS FRAGOSO;;229;10,81%;1
+SECAO;Macaé;109;Sana;UBS DA CABECEIRA DO SANA (SERRA 2);250;102;41,46%;1
+SECAO;Macaé;254;Barra de Macaé;COLÉGIO MUNICIPAL WOLFANGO FERREIRA;033;85;32,95%;1
