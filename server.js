@@ -206,7 +206,8 @@ async function saveReport(req, res, existing) {
 async function handle(req, res) {
   const url = new URL(req.url, 'http://localhost');
   const p = url.pathname;
-  const method = req.method;
+  // HEAD é respondido como GET (o Node omite o corpo); usado por prévias de link.
+  const method = req.method === 'HEAD' ? 'GET' : req.method;
 
   if (method === 'GET' && p.startsWith('/static/')) {
     const file = path.normalize(path.join(PUBLIC_DIR, p.slice(8)));
@@ -240,7 +241,7 @@ async function handle(req, res) {
       const name = `${slugify(report.meta.nome)}_${report.meta.numero || ''}_votacao_${report.meta.uf}_${report.meta.ano}.csv`.replace(/_+/g, '_');
       return send(res, 200, fs.readFileSync(file), 'text/csv; charset=utf-8', { 'Content-Disposition': `attachment; filename="${name}"` });
     }
-    if (!admin) {
+    if (!admin && req.method === 'GET') {
       report.stats = report.stats || { views: 0 };
       report.stats.views = (report.stats.views || 0) + 1;
       report.stats.lastView = new Date().toISOString();
