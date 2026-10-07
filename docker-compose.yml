@@ -23,6 +23,8 @@ services:
         condition: any
       labels:
         - traefik.enable=true
+        - traefik.swarm.network=Monadanet
+        - traefik.docker.network=Monadanet
         - traefik.http.routers.relatorio.rule=Host(`relatorio.agenciafvx.com`)
         - traefik.http.routers.relatorio.entrypoints=websecure
         - traefik.http.routers.relatorio.tls=true
