@@ -16,20 +16,22 @@ services:
       - /var/www/relatorio/data:/app/data
     networks:
       - Monadanet
+    # Rótulos no container: é o que o provedor "docker" do Traefik desta VPS lê.
+    labels: &traefik
+      - traefik.enable=true
+      - traefik.docker.network=Monadanet
+      - traefik.swarm.network=Monadanet
+      - traefik.http.routers.relatorio.rule=Host(`relatorio.agenciafvx.com`)
+      - traefik.http.routers.relatorio.entrypoints=websecure
+      - traefik.http.routers.relatorio.tls=true
+      - traefik.http.routers.relatorio.tls.certresolver=letsencryptresolver
+      - traefik.http.services.relatorio.loadbalancer.server.port=3000
     deploy:
       # Uma réplica só: os dados ficam em arquivos nesta VPS.
       replicas: 1
       restart_policy:
         condition: any
-      labels:
-        - traefik.enable=true
-        - traefik.swarm.network=Monadanet
-        - traefik.docker.network=Monadanet
-        - traefik.http.routers.relatorio.rule=Host(`relatorio.agenciafvx.com`)
-        - traefik.http.routers.relatorio.entrypoints=websecure
-        - traefik.http.routers.relatorio.tls=true
-        - traefik.http.routers.relatorio.tls.certresolver=letsencryptresolver
-        - traefik.http.services.relatorio.loadbalancer.server.port=3000
+      labels: *traefik
 
 networks:
   Monadanet:
