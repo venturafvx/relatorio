@@ -40,9 +40,13 @@
     var id = tr && tr.getAttribute('data-id');
     if (act === 'copy') copy(b.getAttribute('data-url'));
     if (act === 'toggle' && id) {
+      var ligado = b.classList.contains('on');
+      if (ligado && !confirm('Desativar o link de ' + b.getAttribute('data-name') + '? Quem abrir verá "relatório indisponível" até você reativar.')) return;
       api('POST', '/api/reports/' + id + '/toggle', {}).then(function (j) {
         b.className = 'pill ' + (j.ativo ? 'on' : 'off');
-        b.textContent = j.ativo ? 'Ativo' : 'Desativado';
+        b.textContent = (j.ativo ? 'Ativo' : 'Desativado') + ' ⇄';
+        b.title = j.ativo ? 'Clique para desativar o link' : 'Clique para reativar o link';
+        toast(j.ativo ? 'Link reativado' : 'Link desativado');
       }).catch(function (err) { alert(err.message); });
     }
     if (act === 'delete' && id) {
